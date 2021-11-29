@@ -1,9 +1,11 @@
 import React from "react";
 
 import HighlightCard from "../../components/HighlightCard";
-import TransactionCard, {
+import {
+  TransactionCard,
   TransactionCardProps,
 } from "../../components/TransactionCard";
+
 import {
   Container,
   Header,
@@ -25,7 +27,7 @@ export interface DataListProps extends TransactionCardProps {
 }
 
 const Dashboard = () => {
-  const data: DataListProps = [
+  const data: DataListProps[] = [
     {
       id: "1",
       type: "positive",
@@ -105,7 +107,7 @@ const Dashboard = () => {
         <Title>Listagem</Title>
         <TransactionsList
           data={data}
-          keyExtractor={(item: DataListProps) => item.id}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => <TransactionCard data={item} />}
         />
       </Transactions>

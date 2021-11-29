@@ -16,12 +16,12 @@ export const Container = styled.View`
 
 export const Title = styled.Text`
   font-family: ${({ theme }) => theme.fonts.regular};
-  font-size: ${RFValue(14)};
+  font-size: ${RFValue(14)}px;
 `;
 
 export const Amount = styled.Text<TransactionProps>`
   font-family: ${({ theme }) => theme.fonts.regular};
-  font-size: ${RFValue(20)};
+  font-size: ${RFValue(20)}px;
   color: ${({ theme, type }) =>
     type === "positive" ? theme.colors.success : theme.colors.attention};
   margin-top: 2px;
@@ -40,7 +40,7 @@ export const Category = styled.Text`
 `;
 
 export const Icons = styled(Feather)`
-  font-size: ${RFValue(20)};
+  font-size: ${RFValue(20)}px;
   color: ${({ theme }) => theme.colors.text};
 `;
 

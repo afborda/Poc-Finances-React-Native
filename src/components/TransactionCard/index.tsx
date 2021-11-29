@@ -12,7 +12,7 @@ import {
   Date,
 } from "./styles";
 
-interface Category {
+interface CategoryProps {
   name: string;
   icon: string;
 }
@@ -21,7 +21,7 @@ export interface TransactionCardProps {
   type: "positive" | "negative";
   title: string;
   amount: string;
-  category: Category;
+  category: CategoryProps;
   date: string;
 }
 
@@ -29,7 +29,7 @@ export interface Props {
   data: TransactionCardProps;
 }
 
-const TransactionCard = ({ data }: Props) => {
+export const TransactionCard = ({ data }: Props) => {
   return (
     <Container>
       <Title>{data?.title}</Title>
@@ -47,5 +47,3 @@ const TransactionCard = ({ data }: Props) => {
     </Container>
   );
 };
-
-export default TransactionCard;
