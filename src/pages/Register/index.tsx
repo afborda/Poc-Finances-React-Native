@@ -8,6 +8,10 @@ import {
   Alert,
 } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import uuid from "react-native-uuid";
+import { useNavigation } from "@react-navigation/native";
+
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -28,6 +32,7 @@ import {
   Fields,
   TransactionTypes,
 } from "./styles";
+import { useEffect } from "react";
 
 interface FormData {
   name: string;
@@ -51,15 +56,18 @@ const Register = () => {
     name: "Categoria",
   });
 
+  const navigation = useNavigation();
+
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  function handleTransactionsTypeSelect(type: "up" | "down") {
+  function handleTransactionsTypeSelect(type: "positive" | "negative") {
     setTransactionTypeClick(type);
   }
 
@@ -71,7 +79,7 @@ const Register = () => {
     setCategoryModalOpen(true);
   }
 
-  function handleRegister(form: FormData) {
+  async function handleRegister(form: FormData) {
     if (!transactionTypeClick) {
       return Alert.alert("Selecione o tipo de transação");
     }
@@ -79,14 +87,48 @@ const Register = () => {
     if (category.key === "category") {
       return Alert.alert("Selecione a categoria");
     }
-    const data = {
+    const newTransaction = {
+      id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
-      transactionTypeClick,
+      type: transactionTypeClick,
       category: category.key,
+      date: new Date(),
     };
-    console.log(data);
+
+    try {
+      const dataKey = "@gofinances:transactions";
+
+      const data = await AsyncStorage.getItem(dataKey);
+
+      const currentData = data ? JSON.parse(data) : [];
+
+      const dataFormatted = [...currentData, newTransaction];
+
+      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
+
+      reset();
+      setTransactionTypeClick("");
+      setCategory({
+        key: "category",
+        name: "Categoria",
+      });
+
+      navigation.navigate("Listagem");
+    } catch (error) {
+      Alert.alert("Não foi possivel salvar =/");
+    }
   }
+
+  useEffect(() => {
+    async function loadData() {
+      const dataKey = "@gofinances:transactions";
+
+      const data = await AsyncStorage.getItem(dataKey);
+      __DEV__ && console.log(JSON.parse(data!));
+    }
+    loadData();
+  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -115,14 +157,14 @@ const Register = () => {
               <TransactionTypeButton
                 type="up"
                 title="Income"
-                onPress={() => handleTransactionsTypeSelect("up")}
-                isActive={transactionTypeClick === "up"}
+                onPress={() => handleTransactionsTypeSelect("positive")}
+                isActive={transactionTypeClick === "positive"}
               />
               <TransactionTypeButton
                 type="down"
                 title="Outcome"
-                onPress={() => handleTransactionsTypeSelect("down")}
-                isActive={transactionTypeClick === "down"}
+                onPress={() => handleTransactionsTypeSelect("negative")}
+                isActive={transactionTypeClick === "negative"}
               />
             </TransactionTypes>
             <CategorySelectButton
