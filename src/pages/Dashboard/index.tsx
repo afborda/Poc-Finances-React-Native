@@ -34,6 +34,7 @@ export interface DataListProps extends TransactionCardProps {
 
 interface highlighProps {
   amount: string;
+  lastTransaction: string;
 }
 interface highlighData {
   entries: highlighProps;
@@ -48,18 +49,39 @@ const Dashboard = () => {
     {} as highlighData
   );
 
-  const dataKey = "@gofinances:transactions";
-
   const theme = useTheme();
 
+  function getLastTransactionDate(
+    collection: DataListProps[],
+    type: "positive" | "nagative"
+  ) {
+    console.log(collection);
+
+    const lastTransaction = Math.max.apply(
+      Math,
+      collection
+        .filter((transaction) => transaction.type === type)
+        .map((transaction) => new Date(transaction.date).getTime())
+    );
+    console.log("lastTransaction", lastTransaction);
+
+    const date = Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    }).format(new Date(lastTransaction));
+
+    console.log("date", date, "type", type);
+
+    return date;
+  }
+
   async function loadTransactions() {
+    const dataKey = "@gofinances:transactions";
     const response = await AsyncStorage.getItem(dataKey);
-
     const transactions = response ? JSON.parse(response) : [];
-
     let entriesTotal = 0;
     let expensiveTotal = 0;
-
     const transactionsFormatted: DataListProps[] = transactions.map(
       (item: DataListProps) => {
         if (item.type === "positive") {
@@ -67,12 +89,10 @@ const Dashboard = () => {
         } else {
           expensiveTotal += Number(item.amount);
         }
-
         const amount = Number(item.amount).toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         });
-
         const dateFormatted = Intl.DateTimeFormat("pt-BR", {
           day: "2-digit",
           month: "2-digit",
@@ -90,6 +110,22 @@ const Dashboard = () => {
     );
 
     setTransactions(transactionsFormatted);
+
+    //Nao da erro
+    // const lastTransactionsEntries = getLastTransactionDate(
+    //   transactions,
+    //   "positive"
+    // );
+
+    //Da erro
+    const lastTransactionsExpensives = getLastTransactionDate(
+      transactions,
+      "nagative"
+    );
+
+    console.log("lastTransactionsEntries", lastTransactionsExpensives);
+    // console.log("lastTransactionsExpensives", lastTransactionsExpensives);
+
     const total = entriesTotal - expensiveTotal;
 
     setHighlighData({
@@ -98,18 +134,21 @@ const Dashboard = () => {
           style: "currency",
           currency: "BRL",
         }),
+        lastTransaction: "lastTransactionsEntries",
       },
       expensives: {
         amount: expensiveTotal.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
+        lastTransaction: lastTransactionsExpensives,
       },
       total: {
         amount: total.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
+        lastTransaction: "",
       },
     });
     setIsLoading(false);
@@ -158,19 +197,19 @@ const Dashboard = () => {
               type="up"
               title="Entradas"
               amount={highlighData?.entries?.amount}
-              lastTransaction="Última saída dia 03 de abril"
+              lastTransaction={highlighData?.entries?.lastTransaction}
             />
             <HighlightCard
               type="down"
               title="Saídas"
               amount={highlighData?.expensives?.amount}
-              lastTransaction="Última saída dia 03 de abril"
+              lastTransaction={highlighData?.expensives?.lastTransaction}
             />
             <HighlightCard
               type="total"
               title="Total"
               amount={highlighData?.total?.amount}
-              lastTransaction="01 à 16 de abril"
+              lastTransaction={highlighData?.total?.lastTransaction}
             />
           </HighlightCards>
 

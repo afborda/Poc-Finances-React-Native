@@ -125,7 +125,6 @@ const Register = () => {
       const dataKey = "@gofinances:transactions";
 
       const data = await AsyncStorage.getItem(dataKey);
-      __DEV__ && console.log(JSON.parse(data!));
     }
     loadData();
   }, []);
