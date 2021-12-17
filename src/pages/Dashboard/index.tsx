@@ -53,7 +53,7 @@ const Dashboard = () => {
 
   function getLastTransactionDate(
     collection: DataListProps[],
-    type: "positive" | "nagative"
+    type: "positive" | "negative"
   ) {
     console.log(collection);
 
@@ -65,15 +65,11 @@ const Dashboard = () => {
     );
     console.log("lastTransaction", lastTransaction);
 
-    const date = Intl.DateTimeFormat("pt-BR", {
+    return Intl.DateTimeFormat("pt-BR", {
       day: "2-digit",
       month: "2-digit",
       year: "2-digit",
     }).format(new Date(lastTransaction));
-
-    console.log("date", date, "type", type);
-
-    return date;
   }
 
   async function loadTransactions() {
@@ -112,15 +108,15 @@ const Dashboard = () => {
     setTransactions(transactionsFormatted);
 
     //Nao da erro
-    // const lastTransactionsEntries = getLastTransactionDate(
-    //   transactions,
-    //   "positive"
-    // );
+    const lastTransactionsEntries = getLastTransactionDate(
+      transactions,
+      "positive"
+    );
 
     //Da erro
     const lastTransactionsExpensives = getLastTransactionDate(
       transactions,
-      "nagative"
+      "negative"
     );
 
     console.log("lastTransactionsEntries", lastTransactionsExpensives);
@@ -134,7 +130,7 @@ const Dashboard = () => {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransaction: "lastTransactionsEntries",
+        lastTransaction: lastTransactionsEntries,
       },
       expensives: {
         amount: expensiveTotal.toLocaleString("pt-BR", {
