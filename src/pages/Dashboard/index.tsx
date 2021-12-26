@@ -130,7 +130,7 @@ const Dashboard = () => {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransaction: lastTransactionsEntries,
+        lastTransaction: `Ultima entrada ${lastTransactionsEntries}`,
       },
       expensives: {
         amount: expensiveTotal.toLocaleString("pt-BR", {
