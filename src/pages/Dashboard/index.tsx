@@ -57,19 +57,26 @@ const Dashboard = () => {
   ) {
     console.log(collection);
 
-    const lastTransaction = Math.max.apply(
-      Math,
-      collection
-        .filter((transaction) => transaction.type === type)
-        .map((transaction) => new Date(transaction.date).getTime())
+    const lastTransaction = new Date(
+      Math.max.apply(
+        Math,
+        collection
+          .filter((transaction) => transaction.type === type)
+          .map((transaction) => new Date(transaction.date).getTime())
+      )
     );
     console.log("lastTransaction", lastTransaction);
 
-    return Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    }).format(new Date(lastTransaction));
+    // return Intl.DateTimeFormat("pt-BR", {
+    //   day: "2-digit",
+    //   month: "2-digit",
+    //   year: "2-digit",
+    // }).format(new Date(lastTransaction));
+
+    return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString(
+      "pt-BR",
+      { month: "long" }
+    )}`;
   }
 
   async function loadTransactions() {
@@ -113,11 +120,12 @@ const Dashboard = () => {
       "positive"
     );
 
-    //Da erro
     const lastTransactionsExpensives = getLastTransactionDate(
       transactions,
       "negative"
     );
+
+    const totalInterval = `01 a ${lastTransactionsExpensives}`;
 
     console.log("lastTransactionsEntries", lastTransactionsExpensives);
     // console.log("lastTransactionsExpensives", lastTransactionsExpensives);
@@ -130,21 +138,21 @@ const Dashboard = () => {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransaction: `Ultima entrada ${lastTransactionsEntries}`,
+        lastTransaction: `Ultima entrada dia ${lastTransactionsEntries}`,
       },
       expensives: {
         amount: expensiveTotal.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransaction: lastTransactionsExpensives,
+        lastTransaction: `Ultima saida dia ${lastTransactionsExpensives}`,
       },
       total: {
         amount: total.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransaction: "",
+        lastTransaction: `${totalInterval}`,
       },
     });
     setIsLoading(false);
