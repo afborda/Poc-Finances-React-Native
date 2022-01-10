@@ -153,13 +153,13 @@ const Register = () => {
             <TransactionTypes>
               <TransactionTypeButton
                 type="up"
-                title="Income"
+                title="Entrada"
                 onPress={() => handleTransactionsTypeSelect("positive")}
                 isActive={transactionTypeClick === "positive"}
               />
               <TransactionTypeButton
                 type="down"
-                title="Outcome"
+                title="Saida"
                 onPress={() => handleTransactionsTypeSelect("negative")}
                 isActive={transactionTypeClick === "negative"}
               />
