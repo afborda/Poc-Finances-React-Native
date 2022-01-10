@@ -77,6 +77,7 @@ export const Transactions = styled.View`
   margin-top: ${RFPercentage(12)}px;
 `;
 export const Title = styled.Text`
+  color: ${({ theme }) => theme.colors.text_dark};
   font-size: ${RFValue(18)}px;
   font-family: ${({ theme }) => theme.fonts.regular};
   margin-bottom: 16px;
