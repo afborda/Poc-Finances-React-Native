@@ -10,7 +10,7 @@ import Resume from "../pages/Resume";
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
-export function AppRoutes() {
+function AppRoutes() {
   const theme = useTheme();
 
   return (
@@ -60,3 +60,5 @@ export function AppRoutes() {
     </Navigator>
   );
 }
+
+export default AppRoutes;

@@ -23,6 +23,7 @@ import {
 } from "./styles";
 import { categories } from "../../Utils/categories";
 import { useFocusEffect } from "@react-navigation/native";
+import { useAuth } from "../../hooks/auth";
 
 interface TransactionData {
   type: "positive" | "negative";
@@ -45,6 +46,7 @@ const Resume = () => {
   const [totalByCategories, setTotalByCategories] = useState<CategoryData[]>(
     []
   );
+  const { user } = useAuth();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +63,7 @@ const Resume = () => {
 
   async function loadData() {
     setIsLoading(true);
-    const dataKey = "@gofinances:transactions";
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
     const data = await AsyncStorage.getItem(dataKey);
     const currentData = data ? JSON.parse(data) : [];
 
@@ -78,8 +80,6 @@ const Resume = () => {
       },
       0
     );
-
-    console.log(expensivesTotal);
 
     const totalByCategory: CategoryData[] = [];
 
