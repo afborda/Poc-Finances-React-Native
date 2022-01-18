@@ -43,7 +43,7 @@ interface FormData {
 const schema = Yup.object().shape({
   name: Yup.string().required("Nome é Obrigatorio!"),
   amount: Yup.number()
-    .typeError("Informe um valor númerico")
+    .typeError("Informe um valor númerico e com . ")
     .positive("Valor não pode ser negativo!")
     .required("Valor é Obrigatorio!"),
 });
@@ -147,7 +147,7 @@ const Register = () => {
               error={errors.name && errors.name.message}
             />
             <InputForm
-              placeholder="Preço"
+              placeholder="9999.99"
               name="amount"
               control={control}
               keyboardType="numeric"

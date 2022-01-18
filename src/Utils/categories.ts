@@ -6,4 +6,10 @@ export const categories = [
   { key: "leisure", name: "Lazer", icon: "heart", color: "#26195C" },
   { key: "studies", name: "Estudos", icon: "book", color: "#9C001A" },
   { key: "house", name: "Casa", icon: "home", color: "#6699cc" },
+  {
+    key: "investment",
+    name: "Investimento",
+    icon: "bar-chart",
+    color: "#ffbf00",
+  },
 ];
