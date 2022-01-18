@@ -63,8 +63,6 @@ const Dashboard = () => {
       (transaction) => transaction.type === type
     );
 
-    console.log(type, collection);
-
     if (collectionFiltered.length === 0) return 0;
 
     const lastTransaction = new Date(
@@ -75,7 +73,6 @@ const Dashboard = () => {
         )
       )
     );
-    console.log("lastTransaction", lastTransaction);
 
     return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString(
       "pt-BR",
@@ -132,9 +129,6 @@ const Dashboard = () => {
       lastTransactionsExpensives === 0
         ? `Não ha transações`
         : `01 a ${lastTransactionsExpensives}`;
-
-    console.log("lastTransactionsEntries", lastTransactionsExpensives);
-    // console.log("lastTransactionsExpensives", lastTransactionsExpensives);
 
     const total = entriesTotal - expensiveTotal;
 
@@ -194,9 +188,10 @@ const Dashboard = () => {
           <Header>
             <UserContainer>
               <UserInfo>
+                {console.log("@@@@@####>>>", user)}
                 <Photo
                   source={{
-                    uri: user.photo,
+                    uri: user.picture,
                   }}
                 />
                 <User>
