@@ -191,7 +191,7 @@ const Dashboard = () => {
                 {console.log("@@@@@####>>>", user)}
                 <Photo
                   source={{
-                    uri: user.picture,
+                    uri: user.picture || user.photo,
                   }}
                 />
                 <User>

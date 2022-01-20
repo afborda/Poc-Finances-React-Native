@@ -29,6 +29,7 @@ interface AuthorizationResponse {
 }
 
 interface User {
+  picture?: string | undefined;
   id: string;
   name: string;
   email: string;
@@ -67,6 +68,7 @@ function AuthProvider({ children }: AuthProviderProps) {
           email: userInfo.email,
           name: userInfo.given_name,
           photo: userInfo.picture,
+          picture: user.picture,
         });
       }
     } catch (error) {

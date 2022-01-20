@@ -146,6 +146,7 @@ const Register = () => {
               autoCorrect={false}
               error={errors.name && errors.name.message}
             />
+
             <InputForm
               placeholder="9999.99"
               name="amount"
@@ -153,6 +154,7 @@ const Register = () => {
               keyboardType="numeric"
               error={errors.amount && errors.amount.message}
             />
+
             <TransactionTypes>
               <TransactionTypeButton
                 type="up"
