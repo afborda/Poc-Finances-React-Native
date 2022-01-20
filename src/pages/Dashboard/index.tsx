@@ -188,7 +188,6 @@ const Dashboard = () => {
           <Header>
             <UserContainer>
               <UserInfo>
-                {console.log("@@@@@####>>>", user)}
                 <Photo
                   source={{
                     uri: user.picture || user.photo,
@@ -200,7 +199,7 @@ const Dashboard = () => {
                 </User>
               </UserInfo>
               <LogoutButton onPress={signOut}>
-                <Icon name="power" />
+                <Icon name="log-out" />
               </LogoutButton>
             </UserContainer>
           </Header>
