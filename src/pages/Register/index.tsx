@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,9 +19,9 @@ import { useForm } from "react-hook-form";
 import Button from "../../components/Forms/Button";
 import CategorySelectButton from "../../components/Forms/CategorySelectButton";
 import InputForm from "../../components/Forms/InputForm";
+import { useAuth } from "../../hooks/auth";
 
 import TransactionTypeButton from "../../components/Forms/TransactionTypeButton";
-import { categories } from "../../Utils/categories";
 import CategorySelect from "../CategorySelect";
 
 import {
@@ -32,8 +32,6 @@ import {
   Fields,
   TransactionTypes,
 } from "./styles";
-import { useEffect } from "react";
-import { useAuth } from "../../hooks/auth";
 
 interface FormData {
   name: string;
@@ -105,6 +103,7 @@ const Register = () => {
       const currentData = data ? JSON.parse(data) : [];
 
       const dataFormatted = [...currentData, newTransaction];
+      console.log(dataFormatted);
 
       await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
 

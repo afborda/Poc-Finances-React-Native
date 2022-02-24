@@ -54,7 +54,7 @@ function AppRoutes() {
         component={Resume}
         options={{
           tabBarIcon: ({ size, color }) => (
-            <MaterialIcons name="pie-chart" size={size} color={color} />
+            <MaterialIcons name="bar-chart" size={size} color={color} />
           ),
         }}
       />

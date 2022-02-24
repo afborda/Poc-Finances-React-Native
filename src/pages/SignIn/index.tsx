@@ -1,14 +1,19 @@
-import React, { useContext } from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { ActivityIndicator, Alert, Platform } from "react-native";
 import { Text, View } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useTheme } from "styled-components";
-import AppleSvg from "../../assets//apple.svg";
+import AppleSvg from "../../assets/apple.svg";
 import GoogleSvg from "../../assets/google.svg";
+import User from "../../assets/user.svg";
+
 import Logo from "../../assets/logo.svg";
 import SignInSocialButton from "../../components/SignInSocialButton";
 import { useAuth } from "../../hooks/auth";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import InputForm from "../../components/Forms/InputForm";
 
 import {
   Container,
@@ -18,11 +23,26 @@ import {
   SignInTitle,
   Footer,
   FooterWrapper,
+  ContainerLogin,
 } from "./styles";
+import Button from "../../components/Forms/Button";
+
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+const schema = Yup.object().shape({
+  email: Yup.string()
+    .email("Informe um e-mail valido!")
+    .required("Informe seu e-mail!"),
+  password: Yup.string().required("Informe sua senha!"),
+});
 
 const SignIn = () => {
   // const data = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+
   const { signInWithGoogle, signInWithApple } = useAuth();
 
   const theme = useTheme();
@@ -53,6 +73,22 @@ const SignIn = () => {
     }
   }
 
+  async function handleLoginUser(form: LoginData) {
+    console.log("form.email", form.email);
+    console.log("form.password", form.password);
+
+    reset();
+  }
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
   return (
     <Container>
       <Header>
@@ -63,6 +99,25 @@ const SignIn = () => {
           </Title>
         </TitleWrapper>
         <SignInTitle>Faça seu login uma das contas abaixo</SignInTitle>
+        <ContainerLogin>
+          <InputForm
+            placeholder="E-mail"
+            name="email"
+            control={control}
+            keyboardType="email-address"
+            autoCompleteType="email"
+            autoCapitalize="none"
+            error={errors.email && errors.email.message}
+          />
+          <InputForm
+            placeholder="Senha"
+            name="password"
+            control={control}
+            secureTextEntry
+            error={errors.password && errors.password.message}
+          />
+          <Button title="Enviar" onPress={handleSubmit(handleLoginUser)} />
+        </ContainerLogin>
       </Header>
       <Footer>
         <FooterWrapper>
@@ -70,6 +125,11 @@ const SignIn = () => {
             onPress={handleSignInWithGoogle}
             title="Entrar com Google"
             svg={GoogleSvg}
+          />
+          <SignInSocialButton
+            onPress={handleSignInWithGoogle}
+            title="Criar Conta"
+            svg={User}
           />
 
           {Platform.OS === "ios" && (

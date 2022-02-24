@@ -83,6 +83,8 @@ const Dashboard = () => {
   async function loadTransactions() {
     const dataKey = `@gofinances:transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
+    console.log(response);
+
     const transactions = response ? JSON.parse(response) : [];
     let entriesTotal = 0;
     let expensiveTotal = 0;
@@ -167,8 +169,8 @@ const Dashboard = () => {
   useEffect(() => {
     loadTransactions();
 
-    // const dataKey = "@gofinances:transactions";
-    // AsyncStorage.removeItem(dataKey);
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
+    AsyncStorage.removeItem(dataKey);
   }, []);
 
   useFocusEffect(
