@@ -13,7 +13,7 @@ const SignInSocialButton = ({ title, svg: Svg, ...rest }: Props) => {
   return (
     <Button {...rest}>
       <ImageContainer>
-        <Svg height={30} />
+        <Svg width={30} height={30} />
       </ImageContainer>
       <Text>{title}</Text>
     </Button>

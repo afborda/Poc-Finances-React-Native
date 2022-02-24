@@ -8,7 +8,7 @@ export const Container = styled.View`
 
 export const Header = styled.View`
   width: 100%;
-  height: 80%;
+  height: 70%;
   background-color: ${({ theme }) => theme.colors.primary};
   justify-content: center;
   align-items: center;
@@ -38,13 +38,14 @@ export const Footer = styled.View`
 `;
 
 export const FooterWrapper = styled.View`
-  margin-top: ${RFPercentage(-4)}px;
+  margin-top: ${RFPercentage(-3)}px;
   padding: 0 32px;
 
   justify-content: space-between;
 `;
 
 export const ContainerLogin = styled.View`
-  padding: 0 24px;
+  margin-top: ${RFPercentage(3)}px;
+  padding: 0 30px;
   width: 100%;
 `;

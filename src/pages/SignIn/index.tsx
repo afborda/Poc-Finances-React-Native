@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ActivityIndicator, Alert, Platform } from "react-native";
-import { Text, View } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useTheme } from "styled-components";
 import AppleSvg from "../../assets/apple.svg";
@@ -14,6 +13,7 @@ import { useAuth } from "../../hooks/auth";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import InputForm from "../../components/Forms/InputForm";
+import auth from "@react-native-firebase/auth";
 
 import {
   Container,
@@ -26,6 +26,7 @@ import {
   ContainerLogin,
 } from "./styles";
 import Button from "../../components/Forms/Button";
+import { useNavigation } from "@react-navigation/native";
 
 interface LoginData {
   email: string;
@@ -42,10 +43,9 @@ const schema = Yup.object().shape({
 const SignIn = () => {
   // const data = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-
   const { signInWithGoogle, signInWithApple } = useAuth();
-
   const theme = useTheme();
+  const navigation = useNavigation();
 
   async function handleSignInWithGoogle() {
     try {
@@ -73,10 +73,8 @@ const SignIn = () => {
     }
   }
 
-  async function handleLoginUser(form: LoginData) {
-    console.log("form.email", form.email);
-    console.log("form.password", form.password);
-
+  async function handleLoginUser() {
+    navigation.navigate("registerUser");
     reset();
   }
 
@@ -94,9 +92,6 @@ const SignIn = () => {
       <Header>
         <TitleWrapper>
           <Logo width={RFValue(120)} height={RFValue(68)} />
-          <Title>
-            Constrole suas {"\n"} finanças de forma {"\n"} muito simples
-          </Title>
         </TitleWrapper>
         <SignInTitle>Faça seu login uma das contas abaixo</SignInTitle>
         <ContainerLogin>
@@ -127,7 +122,7 @@ const SignIn = () => {
             svg={GoogleSvg}
           />
           <SignInSocialButton
-            onPress={handleSignInWithGoogle}
+            onPress={handleLoginUser}
             title="Criar Conta"
             svg={User}
           />

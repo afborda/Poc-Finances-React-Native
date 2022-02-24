@@ -5,7 +5,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 export const Container = styled.View``;
 
 export const Button = styled(RectButton)`
-  height: ${RFValue(36)}px;
+  height: ${RFValue(45)}px;
   background-color: ${({ theme }) => theme.colors.shape};
   border-radius: 5px;
 
