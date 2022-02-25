@@ -76,7 +76,6 @@ const SignIn = () => {
     auth()
       .signInWithEmailAndPassword(form.email, form.password)
       .then(() => {
-        Alert.alert("Logado com sucesso");
         setIsLoading(false);
       })
       .catch((error) => {

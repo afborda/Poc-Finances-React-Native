@@ -5,6 +5,7 @@ import { useTheme } from "styled-components";
 
 import HighlightCard from "../../components/HighlightCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import firestore from "@react-native-firebase/firestore";
 
 import {
   TransactionCard,
@@ -47,13 +48,14 @@ interface highlighData {
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
+  const [transactionsData, setTransactionsData] = useState<any>("");
   const [highlighData, setHighlighData] = useState<highlighData>(
     {} as highlighData
   );
 
   const theme = useTheme();
 
-  const { signOut, user } = useAuth();
+  const { signOut, user, userFirebase } = useAuth();
 
   function getLastTransactionDate(
     collection: DataListProps[],
@@ -81,9 +83,10 @@ const Dashboard = () => {
   }
 
   async function loadTransactions() {
-    const dataKey = `@gofinances:transactions_user:${user.id}`;
+    const dataKey = `@gofinances:transactions_user:${
+      user.id || userFirebase?.uid
+    }`;
     const response = await AsyncStorage.getItem(dataKey);
-    console.log(response);
 
     const transactions = response ? JSON.parse(response) : [];
     let entriesTotal = 0;
@@ -168,9 +171,28 @@ const Dashboard = () => {
 
   useEffect(() => {
     loadTransactions();
+    setIsLoading(false);
+    const subscribe = firestore()
+      .collection("transaction")
+      .where("idUser", "==", userFirebase?.uid)
+      .onSnapshot((querySnapshot) => {
+        const data = querySnapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            ...doc.data(),
+          };
+        });
 
-    const dataKey = `@gofinances:transactions_user:${user.id}`;
-    AsyncStorage.removeItem(dataKey);
+        setTransactionsData(data);
+        setIsLoading(false);
+      });
+
+    // const dataKey = `@gofinances:transactions_user:${
+    //   user.id || userFirebase?.uid
+    // }`;
+    // AsyncStorage.removeItem(dataKey);
+
+    return () => subscribe();
   }, []);
 
   useFocusEffect(
@@ -230,9 +252,9 @@ const Dashboard = () => {
           <Transactions>
             <Title>Listagem</Title>
             <TransactionsList
-              data={transactions}
+              data={transactionsData}
               keyExtractor={(item) => item.id}
-              renderItem={({ item }) => <TransactionCard data={item} />}
+              renderItem={(item) => <TransactionCard data={item} />}
             />
           </Transactions>
         </>

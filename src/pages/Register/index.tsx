@@ -11,6 +11,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import uuid from "react-native-uuid";
 import { useNavigation } from "@react-navigation/native";
+import firestore from "@react-native-firebase/firestore";
 
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -49,8 +50,9 @@ const schema = Yup.object().shape({
 const Register = () => {
   const [transactionTypeClick, setTransactionTypeClick] = useState("");
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { user } = useAuth();
+  const { user, userFirebase } = useAuth();
 
   const [category, setCategory] = useState({
     key: "category",
@@ -81,6 +83,7 @@ const Register = () => {
   }
 
   async function handleRegister(form: FormData) {
+    setIsLoading(true);
     if (!transactionTypeClick) {
       return Alert.alert("Selecione o tipo de transação");
     }
@@ -97,8 +100,26 @@ const Register = () => {
       date: new Date(),
     };
 
+    firestore()
+      .collection("transaction")
+      .add({
+        idUser: user.id || userFirebase?.uid,
+        id: String(uuid.v4()),
+        name: form.name,
+        amount: form.amount,
+        type: transactionTypeClick,
+        category: category.key,
+        date: new Date(),
+        created_at: firestore.FieldValue.serverTimestamp(),
+      })
+      .then(() => Alert.alert("Transação", "Transação cadastrada com sucesso!"))
+      .catch((error) => console.log(error))
+      .finally(() => setIsLoading(false));
+
     try {
-      const dataKey = `@gofinances:transactions_user:${user.id}`;
+      const dataKey = `@gofinances:transactions_user:${
+        user.id || userFirebase?.uid
+      }`;
       const data = await AsyncStorage.getItem(dataKey);
       const currentData = data ? JSON.parse(data) : [];
 
@@ -172,7 +193,11 @@ const Register = () => {
               onPress={handleOpenSelectCategoryModal}
             />
           </Fields>
-          <Button title="Enviar" onPress={handleSubmit(handleRegister)} />
+          <Button
+            loading={isLoading}
+            title="Enviar"
+            onPress={handleSubmit(handleRegister)}
+          />
         </Form>
         <Modal visible={categoryModalOpen} animationType="slide">
           <CategorySelect

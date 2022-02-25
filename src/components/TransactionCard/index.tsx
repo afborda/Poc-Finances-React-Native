@@ -26,19 +26,21 @@ export interface Props {
 }
 
 export const TransactionCard = ({ data }: Props) => {
-  const [category] = categories.filter((item) => item.key === data.category);
+  const [category] = categories.filter(
+    (item) => item.key === data.item.category
+  );
 
   return (
     <Container>
-      <Title>{data?.name}</Title>
+      <Title>{data?.item.name}</Title>
       <Amount type={data.type}>
-        {data.type === "negative" && "- "}
-        {data?.amount}
+        {data.item.type === "negative" && "- "}
+        {data?.item.amount}
       </Amount>
       <Footer>
         <Category>
           <Icons name={category.icon} />
-          <CategoryName> {category?.name}</CategoryName>
+          <CategoryName> {category.name}</CategoryName>
         </Category>
         <Date>{data?.date}</Date>
       </Footer>
