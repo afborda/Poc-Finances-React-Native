@@ -11,7 +11,11 @@ interface Props extends TouchableOpacityProps {
 const Button = ({ title, loading, disabled, ...rest }: Props) => {
   return (
     <Container disabled={disabled} {...rest}>
-      {loading ? <ActivityIndicator size="small" /> : <Title>{title}</Title>}
+      {loading ? (
+        <ActivityIndicator size="large" color="#fff" />
+      ) : (
+        <Title>{title}</Title>
+      )}
     </Container>
   );
 };

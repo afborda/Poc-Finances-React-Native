@@ -1,29 +1,29 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, Alert, Platform } from "react-native";
-import { RFValue } from "react-native-responsive-fontsize";
+import { ActivityIndicator, Alert, Platform, Text } from "react-native";
 import { useTheme } from "styled-components";
 import AppleSvg from "../../assets/apple.svg";
 import GoogleSvg from "../../assets/google.svg";
 import User from "../../assets/user.svg";
 
-import Logo from "../../assets/logo.svg";
 import SignInSocialButton from "../../components/SignInSocialButton";
 import { useAuth } from "../../hooks/auth";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import InputForm from "../../components/Forms/InputForm";
 import auth from "@react-native-firebase/auth";
+import LottieView from "lottie-react-native";
+//import LottieView from "../../assets/relax.json";
 
 import {
   Container,
   Header,
   TitleWrapper,
-  Title,
-  SignInTitle,
   Footer,
   FooterWrapper,
   ContainerLogin,
+  ContainerActions,
+  Main,
 } from "./styles";
 import Button from "../../components/Forms/Button";
 import { useNavigation } from "@react-navigation/native";
@@ -37,11 +37,10 @@ const schema = Yup.object().shape({
   email: Yup.string()
     .email("Informe um e-mail valido!")
     .required("Informe seu e-mail!"),
-  password: Yup.string().required("Informe sua senha!"),
+  password: Yup.string(),
 });
 
 const SignIn = () => {
-  // const data = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const { signInWithGoogle, signInWithApple } = useAuth();
   const theme = useTheme();
@@ -73,9 +72,37 @@ const SignIn = () => {
     }
   }
 
-  async function handleLoginUser() {
-    navigation.navigate("registerUser");
+  function handleLoginUser(form: LoginData) {
+    setIsLoading(true);
+
+    auth()
+      .signInWithEmailAndPassword(form.email, form.password)
+      .then(() => {
+        Alert.alert("Logado com sucesso");
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => setIsLoading(false));
+
     reset();
+  }
+
+  function handleRegisterUser() {
+    navigation.navigate("registerUser");
+  }
+
+  function handleForgotPassword(form: LoginData) {
+    auth()
+      .sendPasswordResetEmail(form.email)
+      .then(() =>
+        Alert.alert("Redefinir Senha", "Enviamos um e-mail para você")
+      )
+      .catch((error) => {
+        setIsLoading(false);
+        console.log(error);
+      });
   }
 
   const {
@@ -91,9 +118,13 @@ const SignIn = () => {
     <Container>
       <Header>
         <TitleWrapper>
-          <Logo width={RFValue(120)} height={RFValue(68)} />
+          <LottieView
+            source={require(`../../assets/money-plant.json`)}
+            autoPlay
+            loop
+          />
         </TitleWrapper>
-        <SignInTitle>Faça seu login uma das contas abaixo</SignInTitle>
+
         <ContainerLogin>
           <InputForm
             placeholder="E-mail"
@@ -111,30 +142,36 @@ const SignIn = () => {
             secureTextEntry
             error={errors.password && errors.password.message}
           />
-          <Button title="Enviar" onPress={handleSubmit(handleLoginUser)} />
+          <Button
+            loading={isLoading}
+            title="Enviar"
+            onPress={handleSubmit(handleLoginUser)}
+          />
         </ContainerLogin>
       </Header>
       <Footer>
         <FooterWrapper>
           <SignInSocialButton
             onPress={handleSignInWithGoogle}
-            title="Entrar com Google"
             svg={GoogleSvg}
           />
-          <SignInSocialButton
-            onPress={handleLoginUser}
-            title="Criar Conta"
-            svg={User}
-          />
+          <SignInSocialButton onPress={handleRegisterUser} svg={User} />
 
           {Platform.OS === "ios" && (
             <SignInSocialButton
               onPress={handleSignInWithApple}
-              title="Entrar com Apple"
               svg={AppleSvg}
             />
           )}
         </FooterWrapper>
+        <ContainerActions>
+          <SignInSocialButton
+            onPress={handleSubmit(handleForgotPassword)}
+            title="Esqueci minha senha"
+            svg={User}
+            size="large"
+          />
+        </ContainerActions>
 
         {isLoading && (
           <ActivityIndicator

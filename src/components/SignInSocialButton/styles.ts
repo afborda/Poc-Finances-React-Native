@@ -4,10 +4,15 @@ import { RFValue } from "react-native-responsive-fontsize";
 
 export const Container = styled.View``;
 
+interface types {
+  size?: string;
+}
+
 export const Button = styled(RectButton)`
   height: ${RFValue(45)}px;
   background-color: ${({ theme }) => theme.colors.shape};
   border-radius: 5px;
+  width: ${(props: types) => (props.size === "large" ? "100%" : "64px")};
 
   align-items: center;
   flex-direction: row;
@@ -20,12 +25,10 @@ export const ImageContainer = styled.View`
 
   padding: ${RFValue(16)}px;
   border-color: ${({ theme }) => theme.colors.background};
-  border-right-width: 1px;
 `;
 export const Text = styled.Text`
   flex: 1;
   text-align: center;
-
   font-family: ${({ theme }) => theme.fonts.medium};
   font-size: ${RFValue(14)}px;
 `;

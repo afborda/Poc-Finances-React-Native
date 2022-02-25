@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Text, Alert } from "react-native";
+import { Alert } from "react-native";
 import InputForm from "../../components/Forms/InputForm";
 import { useForm } from "react-hook-form";
 import auth from "@react-native-firebase/auth";
 import * as Yup from "yup";
+import LottieView from "lottie-react-native";
 
 import {
   Container,
@@ -60,7 +61,11 @@ const RegisterUser = () => {
     <Container>
       <Main>
         <Header>
-          <Text>Abner Fonseca</Text>
+          <LottieView
+            source={require(`../../assets/finance-blue.json`)}
+            autoPlay
+            loop
+          />
         </Header>
         <ContainerLogin>
           <TitleRegister>{`Bem vindo!\n Mais um passo para seu\n controle financeiro`}</TitleRegister>

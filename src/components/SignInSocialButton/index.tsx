@@ -5,13 +5,19 @@ import { SvgProps } from "react-native-svg";
 import { Button, ImageContainer, Text } from "./styles";
 
 interface Props extends RectButtonProps {
-  title: string;
+  title?: string;
   svg: React.FC<SvgProps>;
+  size?: string;
 }
 
-const SignInSocialButton = ({ title, svg: Svg, ...rest }: Props) => {
+const SignInSocialButton = ({
+  title = "",
+  svg: Svg,
+  size = "small",
+  ...rest
+}: Props) => {
   return (
-    <Button {...rest}>
+    <Button size={size} {...rest}>
       <ImageContainer>
         <Svg width={30} height={30} />
       </ImageContainer>

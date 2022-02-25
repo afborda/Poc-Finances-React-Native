@@ -12,7 +12,6 @@ import {
 } from "@expo-google-fonts/poppins";
 
 import theme from "./src/global/styles/theme";
-import SignIn from "./src/pages/SignIn";
 import { AuthProvider, useAuth } from "./src/hooks/auth";
 import Routes from "./src/routes";
 

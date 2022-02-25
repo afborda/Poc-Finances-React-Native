@@ -1,19 +1,24 @@
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import styled from "styled-components/native";
-import theme from "../../global/styles/theme";
 
-export const Container = styled.View`
-  flex: 1;
-`;
+export const Container = styled.ScrollView.attrs(() => ({
+  contentContainerStyle: {
+    justifyContent: "center",
+    backgroundColor: "#5636D3",
+    flex: 1,
+  },
+}))``;
 
 export const Header = styled.View`
   width: 100%;
-  height: 70%;
   background-color: ${({ theme }) => theme.colors.primary};
   justify-content: center;
-  align-items: center;
+  flex: 7;
 `;
 export const TitleWrapper = styled.View`
+  width: 100%;
+  height: 45%;
+  justify-content: center;
   align-items: center;
 `;
 export const Title = styled.Text`
@@ -28,24 +33,26 @@ export const SignInTitle = styled.Text`
   color: ${({ theme }) => theme.colors.shape};
   font-size: ${RFValue(16)}px;
   text-align: center;
-  margin-top: 50px;
-  margin-bottom: 25px;
 `;
 export const Footer = styled.View`
   width: 100%;
-  height: 30%;
+  flex: 3;
   background-color: ${({ theme }) => theme.colors.secondary};
 `;
 
 export const FooterWrapper = styled.View`
-  margin-top: ${RFPercentage(-3)}px;
+  margin-top: ${RFPercentage(2)}px;
   padding: 0 32px;
-
-  justify-content: space-between;
+  flex-direction: row;
+  justify-content: space-around;
 `;
 
 export const ContainerLogin = styled.View`
   margin-top: ${RFPercentage(3)}px;
   padding: 0 30px;
   width: 100%;
+`;
+
+export const ContainerActions = styled.View`
+  margin: 0 30px;
 `;

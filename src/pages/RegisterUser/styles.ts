@@ -7,11 +7,13 @@ export const Container = styled.View`
   background-color: ${({ theme }) => theme.colors.primary};
 `;
 
-export const Main = styled.SafeAreaView``;
+export const Main = styled.SafeAreaView`
+  height: 100%;
+`;
 
 export const Header = styled.View`
   width: 100%;
-  height: 30%;
+  height: 35%;
   background-color: ${({ theme }) => theme.colors.secondary};
   justify-content: center;
   align-items: center;
