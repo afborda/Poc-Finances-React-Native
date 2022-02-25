@@ -8,6 +8,7 @@ import React, {
 import * as AuthSession from "expo-auth-session";
 import * as AppleAuthentication from "expo-apple-authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 const { CLIENT_ID } = process.env;
 const { REDIRECT_URI } = process.env;
@@ -22,6 +23,7 @@ interface IAuthContextData {
   signInWithApple(): Promise<void>;
   signOut(): Promise<void>;
   userStorageLoading: boolean;
+  userFirebase: FirebaseAuthTypes.User | null;
 }
 
 interface AuthorizationResponse {
@@ -44,7 +46,8 @@ const AuthContext = createContext({} as IAuthContextData);
 function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User>({} as User);
   const [userStorageLoading, setUserStorageLoading] = useState(true);
-
+  const [userFirebase, setUserFirebase] =
+    useState<FirebaseAuthTypes.User | null>(null);
   const userStorageKey = "@gofinances:user";
 
   async function signInWithGoogle() {
@@ -107,6 +110,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   async function signOut() {
     setUser({} as User);
+    auth().signOut();
 
     await AsyncStorage.removeItem(userStorageKey);
   }
@@ -123,6 +127,10 @@ function AuthProvider({ children }: AuthProviderProps) {
       setUserStorageLoading(false);
     }
     loadUserStorageDate();
+    const subscriber = auth().onAuthStateChanged(setUserFirebase);
+    console.log(userFirebase);
+
+    return subscriber;
   }, []);
 
   return (
@@ -132,6 +140,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         signInWithGoogle,
         signInWithApple,
         signOut,
+        userFirebase,
         userStorageLoading,
       }}
     >

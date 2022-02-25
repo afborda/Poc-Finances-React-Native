@@ -13,7 +13,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import InputForm from "../../components/Forms/InputForm";
 import auth from "@react-native-firebase/auth";
 import LottieView from "lottie-react-native";
-//import LottieView from "../../assets/relax.json";
 
 import {
   Container,
@@ -23,7 +22,6 @@ import {
   FooterWrapper,
   ContainerLogin,
   ContainerActions,
-  Main,
 } from "./styles";
 import Button from "../../components/Forms/Button";
 import { useNavigation } from "@react-navigation/native";
@@ -119,7 +117,7 @@ const SignIn = () => {
       <Header>
         <TitleWrapper>
           <LottieView
-            source={require(`../../assets/money-plant.json`)}
+            source={require(`../../assets/finance.json`)}
             autoPlay
             loop
           />
