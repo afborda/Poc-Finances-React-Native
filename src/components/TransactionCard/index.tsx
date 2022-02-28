@@ -1,6 +1,8 @@
 import React from "react";
 import { View } from "react-native";
 import { categories } from "../../Utils/categories";
+import { EditDate } from "../Utils/DateUtils/Index";
+import { MoneyFormat } from "../Utils/MoneyUtils";
 
 import {
   Container,
@@ -33,16 +35,16 @@ export const TransactionCard = ({ data }: Props) => {
   return (
     <Container>
       <Title>{data?.item.name}</Title>
-      <Amount type={data.type}>
+      <Amount type={data.item.type}>
         {data.item.type === "negative" && "- "}
-        {data?.item.amount}
+        {MoneyFormat(data?.item.amount)}
       </Amount>
       <Footer>
         <Category>
           <Icons name={category.icon} />
           <CategoryName> {category.name}</CategoryName>
         </Category>
-        <Date>{data?.date}</Date>
+        <Date>{EditDate(data?.item.date)}</Date>
       </Footer>
     </Container>
   );

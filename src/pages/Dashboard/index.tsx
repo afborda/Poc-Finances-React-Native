@@ -30,6 +30,7 @@ import {
   LogoutButton,
 } from "./styles";
 import { useAuth } from "../../hooks/auth";
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 export interface DataListProps extends TransactionCardProps {
   id: string;
@@ -58,7 +59,7 @@ const Dashboard = () => {
   const { signOut, user, userFirebase } = useAuth();
 
   function getLastTransactionDate(
-    collection: DataListProps[],
+    collection: any[],
     type: "positive" | "negative"
   ) {
     const collectionFiltered = collection.filter(
@@ -82,96 +83,73 @@ const Dashboard = () => {
     )}`;
   }
 
-  async function loadTransactions() {
-    const dataKey = `@gofinances:transactions_user:${
-      user.id || userFirebase?.uid
-    }`;
-    const response = await AsyncStorage.getItem(dataKey);
+  // async function loadTransactions() {
 
-    const transactions = response ? JSON.parse(response) : [];
-    let entriesTotal = 0;
-    let expensiveTotal = 0;
-    const transactionsFormatted: DataListProps[] = transactions.map(
-      (item: DataListProps) => {
-        if (item.type === "positive") {
-          entriesTotal += Number(item.amount);
-        } else {
-          expensiveTotal += Number(item.amount);
-        }
-        const amount = Number(item.amount).toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        });
-        const dateFormatted = Intl.DateTimeFormat("pt-BR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "2-digit",
-        }).format(new Date(item.date));
-        return {
-          id: item.id,
-          name: item.name,
-          amount,
-          type: item.type,
-          category: item.category,
-          date: dateFormatted,
-        };
-      }
-    );
+  //   let entriesTotal = 0;
+  //   let expensiveTotal = 0;
+  //   const transactionsFormatted = transactionsData.map((item: any) => {
+  //     console.log("item", item);
 
-    setTransactions(transactionsFormatted.reverse());
+  //     if (item.type === "positive") {
+  //       entriesTotal += Number(item.amount);
+  //     } else {
+  //       expensiveTotal += Number(item.amount);
+  //     }
 
-    const lastTransactionsEntries = getLastTransactionDate(
-      transactions,
-      "positive"
-    );
+  //   setTransactionsData(transactionsFormatted);
 
-    const lastTransactionsExpensives = getLastTransactionDate(
-      transactions,
-      "negative"
-    );
+  //   const lastTransactionsEntries = getLastTransactionDate(
+  //     transactionsData,
+  //     "positive"
+  //   );
 
-    const totalInterval =
-      lastTransactionsExpensives === 0
-        ? `Não ha transações`
-        : `01 a ${lastTransactionsExpensives}`;
+  //   const lastTransactionsExpensives = getLastTransactionDate(
+  //     transactionsData,
+  //     "negative"
+  //   );
 
-    const total = entriesTotal - expensiveTotal;
+  //   const totalInterval =
+  //     lastTransactionsExpensives === 0
+  //       ? `Não ha transações`
+  //       : `01 a ${lastTransactionsExpensives}`;
 
-    setHighlighData({
-      entries: {
-        amount: entriesTotal.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
-        lastTransaction:
-          lastTransactionsEntries === 0
-            ? `Não ha transações`
-            : `Ultima entrada dia ${lastTransactionsEntries}`,
-      },
-      expensives: {
-        amount: expensiveTotal.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
-        lastTransaction:
-          lastTransactionsExpensives === 0
-            ? `Não ha transações`
-            : `Ultima saida dia ${lastTransactionsExpensives}`,
-      },
-      total: {
-        amount: total.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
-        lastTransaction: `${totalInterval}`,
-      },
-    });
-    setIsLoading(false);
-  }
+  //   const total = entriesTotal - expensiveTotal;
+
+  //   setHighlighData({
+  //     entries: {
+  //       amount: entriesTotal.toLocaleString("pt-BR", {
+  //         style: "currency",
+  //         currency: "BRL",
+  //       }),
+  //       lastTransaction:
+  //         lastTransactionsEntries === 0
+  //           ? `Não ha transações`
+  //           : `Ultima entrada dia ${lastTransactionsEntries}`,
+  //     },
+  //     expensives: {
+  //       amount: expensiveTotal.toLocaleString("pt-BR", {
+  //         style: "currency",
+  //         currency: "BRL",
+  //       }),
+  //       lastTransaction:
+  //         lastTransactionsExpensives === 0
+  //           ? `Não ha transações`
+  //           : `Ultima saida dia ${lastTransactionsExpensives}`,
+  //     },
+  //     total: {
+  //       amount: total.toLocaleString("pt-BR", {
+  //         style: "currency",
+  //         currency: "BRL",
+  //       }),
+  //       lastTransaction: `${totalInterval}`,
+  //     },
+  //   });
+  //   setIsLoading(false);
+  // }
 
   useEffect(() => {
-    loadTransactions();
-    setIsLoading(false);
+    // loadTransactions();
+    setIsLoading(true);
     const subscribe = firestore()
       .collection("transaction")
       .where("idUser", "==", userFirebase?.uid)
@@ -184,6 +162,7 @@ const Dashboard = () => {
         });
 
         setTransactionsData(data);
+
         setIsLoading(false);
       });
 
@@ -197,7 +176,7 @@ const Dashboard = () => {
 
   useFocusEffect(
     useCallback(() => {
-      loadTransactions();
+      // loadTransactions();
     }, [])
   );
 
