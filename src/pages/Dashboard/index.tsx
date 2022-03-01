@@ -31,6 +31,7 @@ import {
 } from "./styles";
 import { useAuth } from "../../hooks/auth";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { EditDate } from "../../components/Utils/DateUtils/Index";
 
 export interface DataListProps extends TransactionCardProps {
   id: string;
@@ -49,6 +50,7 @@ interface highlighData {
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
+
   const [transactionsData, setTransactionsData] = useState<any>("");
   const [highlighData, setHighlighData] = useState<highlighData>(
     {} as highlighData
@@ -62,6 +64,8 @@ const Dashboard = () => {
     collection: any[],
     type: "positive" | "negative"
   ) {
+    console.log("collection", collection);
+
     const collectionFiltered = collection.filter(
       (transaction) => transaction.type === type
     );
@@ -71,11 +75,11 @@ const Dashboard = () => {
     const lastTransaction = new Date(
       Math.max.apply(
         Math,
-        collectionFiltered.map((transaction) =>
-          new Date(transaction.date).getTime()
-        )
+        collectionFiltered.map((transaction) => transaction.date.toDate())
       )
     );
+
+    console.log("lastTransaction", lastTransaction);
 
     return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString(
       "pt-BR",
@@ -83,85 +87,105 @@ const Dashboard = () => {
     )}`;
   }
 
-  // async function loadTransactions() {
+  async function loadTransactions() {
+    let entriesTotal = 0;
+    let expensiveTotal = 0;
+    const transactionsFormatted: any[] = transactionsData.map((item: any) => {
+      console.log("item >>>", item);
 
-  //   let entriesTotal = 0;
-  //   let expensiveTotal = 0;
-  //   const transactionsFormatted = transactionsData.map((item: any) => {
-  //     console.log("item", item);
+      if (item.type === "positive") {
+        entriesTotal += Number(item.amount);
+      } else {
+        expensiveTotal += Number(item.amount);
+      }
+      const amount = Number(item.amount).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
 
-  //     if (item.type === "positive") {
-  //       entriesTotal += Number(item.amount);
-  //     } else {
-  //       expensiveTotal += Number(item.amount);
-  //     }
+      return {
+        id: item.id,
+        name: item.name,
+        amount,
+        type: item.type,
+        category: item.category,
+      };
+    });
 
-  //   setTransactionsData(transactionsFormatted);
+    setTransactions(transactionsFormatted);
 
-  //   const lastTransactionsEntries = getLastTransactionDate(
-  //     transactionsData,
-  //     "positive"
-  //   );
+    const lastTransactionsEntries = getLastTransactionDate(
+      transactionsData,
+      "positive"
+    );
 
-  //   const lastTransactionsExpensives = getLastTransactionDate(
-  //     transactionsData,
-  //     "negative"
-  //   );
+    const lastTransactionsExpensives = getLastTransactionDate(
+      transactionsData,
+      "negative"
+    );
 
-  //   const totalInterval =
-  //     lastTransactionsExpensives === 0
-  //       ? `Não ha transações`
-  //       : `01 a ${lastTransactionsExpensives}`;
+    const totalInterval =
+      lastTransactionsExpensives === 0
+        ? `Não ha transações`
+        : `01 a ${lastTransactionsExpensives}`;
 
-  //   const total = entriesTotal - expensiveTotal;
+    const total = entriesTotal - expensiveTotal;
 
-  //   setHighlighData({
-  //     entries: {
-  //       amount: entriesTotal.toLocaleString("pt-BR", {
-  //         style: "currency",
-  //         currency: "BRL",
-  //       }),
-  //       lastTransaction:
-  //         lastTransactionsEntries === 0
-  //           ? `Não ha transações`
-  //           : `Ultima entrada dia ${lastTransactionsEntries}`,
-  //     },
-  //     expensives: {
-  //       amount: expensiveTotal.toLocaleString("pt-BR", {
-  //         style: "currency",
-  //         currency: "BRL",
-  //       }),
-  //       lastTransaction:
-  //         lastTransactionsExpensives === 0
-  //           ? `Não ha transações`
-  //           : `Ultima saida dia ${lastTransactionsExpensives}`,
-  //     },
-  //     total: {
-  //       amount: total.toLocaleString("pt-BR", {
-  //         style: "currency",
-  //         currency: "BRL",
-  //       }),
-  //       lastTransaction: `${totalInterval}`,
-  //     },
-  //   });
-  //   setIsLoading(false);
-  // }
+    setHighlighData({
+      entries: {
+        amount: entriesTotal.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+        lastTransaction:
+          lastTransactionsEntries === 0
+            ? `Não ha transações`
+            : `Ultima entrada dia ${lastTransactionsEntries}`,
+      },
+      expensives: {
+        amount: expensiveTotal.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+        lastTransaction:
+          lastTransactionsExpensives === 0
+            ? `Não ha transações`
+            : `Ultima saida dia ${lastTransactionsExpensives}`,
+      },
+      total: {
+        amount: total.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+        lastTransaction: `${totalInterval}`,
+      },
+    });
+    setIsLoading(false);
+  }
 
   useEffect(() => {
-    // loadTransactions();
     setIsLoading(true);
     const subscribe = firestore()
       .collection("transaction")
       .where("idUser", "==", userFirebase?.uid)
       .onSnapshot((querySnapshot) => {
-        const data = querySnapshot.docs.map((doc) => {
+        const data = querySnapshot?.docs?.map((doc) => {
           return {
             id: doc.id,
             ...doc.data(),
           };
         });
 
-        setTransactionsData(data);
+        console.log(data);
+
+        const sortedActivities = data.sort(
+          (a: number, b: number) =>
+            new Date(b.date.toDate()) - new Date(a.date.toDate())
+        );
+
+        setTransactionsData(sortedActivities);
+
+        loadTransactions();
 
         setIsLoading(false);
       });
@@ -176,8 +200,8 @@ const Dashboard = () => {
 
   useFocusEffect(
     useCallback(() => {
-      // loadTransactions();
-    }, [])
+      loadTransactions();
+    }, [transactionsData])
   );
 
   return (
@@ -193,7 +217,10 @@ const Dashboard = () => {
               <UserInfo>
                 <Photo
                   source={{
-                    uri: user.picture || user.photo,
+                    uri:
+                      user.picture ||
+                      user.photo ||
+                      "https://cdn-icons-png.flaticon.com/512/6966/6966268.png",
                   }}
                 />
                 <User>
