@@ -4,7 +4,6 @@ import { ActivityIndicator } from "react-native";
 import { useTheme } from "styled-components";
 
 import HighlightCard from "../../components/HighlightCard";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import firestore from "@react-native-firebase/firestore";
 
 import {
@@ -30,8 +29,8 @@ import {
   LogoutButton,
 } from "./styles";
 import { useAuth } from "../../hooks/auth";
-import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import { EditDate } from "../../components/Utils/DateUtils/Index";
+import { getLastTransactionDate } from "../../components/Utils/DateUtils/Index";
+import { getListTransactions } from "../../service/Firebase";
 
 export interface DataListProps extends TransactionCardProps {
   id: string;
@@ -48,10 +47,8 @@ interface highlighData {
 }
 
 const Dashboard = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [transactions, setTransactions] = useState<DataListProps[]>([]);
-
-  const [transactionsData, setTransactionsData] = useState<any>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [transactionsData, setTransactionsData] = useState<any>([]);
   const [highlighData, setHighlighData] = useState<highlighData>(
     {} as highlighData
   );
@@ -60,39 +57,11 @@ const Dashboard = () => {
 
   const { signOut, user, userFirebase } = useAuth();
 
-  function getLastTransactionDate(
-    collection: any[],
-    type: "positive" | "negative"
-  ) {
-    console.log("collection", collection);
-
-    const collectionFiltered = collection.filter(
-      (transaction) => transaction.type === type
-    );
-
-    if (collectionFiltered.length === 0) return 0;
-
-    const lastTransaction = new Date(
-      Math.max.apply(
-        Math,
-        collectionFiltered.map((transaction) => transaction.date.toDate())
-      )
-    );
-
-    console.log("lastTransaction", lastTransaction);
-
-    return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString(
-      "pt-BR",
-      { month: "long" }
-    )}`;
-  }
-
   async function loadTransactions() {
     let entriesTotal = 0;
     let expensiveTotal = 0;
-    const transactionsFormatted: any[] = transactionsData.map((item: any) => {
-      console.log("item >>>", item);
 
+    const transactionsFormatted: any[] = transactionsData?.map((item: any) => {
       if (item.type === "positive") {
         entriesTotal += Number(item.amount);
       } else {
@@ -111,8 +80,6 @@ const Dashboard = () => {
         category: item.category,
       };
     });
-
-    setTransactions(transactionsFormatted);
 
     const lastTransactionsEntries = getLastTransactionDate(
       transactionsData,
@@ -160,14 +127,12 @@ const Dashboard = () => {
         lastTransaction: `${totalInterval}`,
       },
     });
-    setIsLoading(false);
   }
 
-  useEffect(() => {
-    setIsLoading(true);
-    const subscribe = firestore()
+  const handleGetValue = () => {
+    firestore()
       .collection("transaction")
-      .where("idUser", "==", userFirebase?.uid)
+      .where("idUser", "==", userFirebase?.uid || user.id)
       .onSnapshot((querySnapshot) => {
         const data = querySnapshot?.docs?.map((doc) => {
           return {
@@ -176,33 +141,20 @@ const Dashboard = () => {
           };
         });
 
-        console.log(data);
-
         const sortedActivities = data.sort(
-          (a: number, b: number) =>
+          (a: any, b: any) =>
             new Date(b.date.toDate()) - new Date(a.date.toDate())
         );
+        console.log("sortedActivities>>>>", sortedActivities);
 
         setTransactionsData(sortedActivities);
-
-        loadTransactions();
-
-        setIsLoading(false);
       });
+  };
 
-    // const dataKey = `@gofinances:transactions_user:${
-    //   user.id || userFirebase?.uid
-    // }`;
-    // AsyncStorage.removeItem(dataKey);
-
-    return () => subscribe();
+  useEffect(() => {
+    handleGetValue();
+    loadTransactions();
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      loadTransactions();
-    }, [transactionsData])
-  );
 
   return (
     <Container>

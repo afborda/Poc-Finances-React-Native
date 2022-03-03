@@ -14,3 +14,25 @@ export const EditDate = (date: DateTypes) => {
 
   return dateFormatted;
 };
+
+export function getLastTransactionDate(
+  collection: any[],
+  type: "positive" | "negative"
+) {
+  const collectionFiltered = collection.filter(
+    (transaction) => transaction.type === type
+  );
+
+  if (collectionFiltered.length === 0) return 0;
+
+  const lastTransaction = new Date(
+    Math.max.apply(
+      Math,
+      collectionFiltered.map((transaction) => transaction.date.toDate())
+    )
+  );
+  return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString(
+    "pt-BR",
+    { month: "long" }
+  )}`;
+}
