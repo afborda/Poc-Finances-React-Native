@@ -53,7 +53,7 @@ export const UserContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-top: ${getStatusBarHeight() + RFValue(28)}px;
+  margin-top: ${getStatusBarHeight() + RFValue(15)}px;
 `;
 
 export const Icon = styled(Feather)`

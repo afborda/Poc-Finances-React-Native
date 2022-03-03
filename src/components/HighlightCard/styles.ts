@@ -4,6 +4,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 
 interface TypeProps {
   type: "up" | "down" | "total";
+  sizeAmount?: string;
 }
 
 export const Container = styled.View<TypeProps>`
@@ -56,10 +57,11 @@ export const Footer = styled.View``;
 
 export const Amount = styled.Text<TypeProps>`
   font-family: ${({ theme }) => theme.fonts.medium};
-  font-size: ${RFValue(32)}px;
+  /* font-size: ${RFValue(32)}px; */
   color: ${({ theme, type }) =>
     type === "total" ? theme.colors.shape : theme.colors.text_dark};
   margin-top: 38px;
+  font-size: ${RFValue(25)}px;
 `;
 
 export const LastTransaction = styled.Text<TypeProps>`

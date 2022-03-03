@@ -81,6 +81,8 @@ const Dashboard = () => {
       };
     });
 
+    console.log(transactionsFormatted);
+
     const lastTransactionsEntries = getLastTransactionDate(
       transactionsData,
       "positive"
@@ -130,6 +132,8 @@ const Dashboard = () => {
   }
 
   const handleGetValue = () => {
+    setIsLoading(true);
+
     firestore()
       .collection("transaction")
       .where("idUser", "==", userFirebase?.uid || user.id)
@@ -148,6 +152,8 @@ const Dashboard = () => {
         console.log("sortedActivities>>>>", sortedActivities);
 
         setTransactionsData(sortedActivities);
+        loadTransactions();
+        setIsLoading(false);
       });
   };
 
