@@ -1,6 +1,6 @@
 import "intl";
 import "intl/locale-data/jsonp/pt-BR";
-import React from "react";
+import React, { useEffect } from "react";
 import AppLoading from "expo-app-loading";
 import { ThemeProvider } from "styled-components";
 import { StatusBar } from "react-native";
@@ -10,6 +10,7 @@ import {
   Poppins_500Medium,
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
+import SplashScreen from "react-native-splash-screen";
 
 import theme from "./src/global/styles/theme";
 import { AuthProvider, useAuth } from "./src/hooks/auth";
@@ -23,6 +24,10 @@ export default function App() {
   });
 
   const { userStorageLoading } = useAuth();
+
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
 
   if (!fontsLoaded || userStorageLoading) {
     return <AppLoading />;

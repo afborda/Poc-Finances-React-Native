@@ -61,7 +61,7 @@ const Dashboard = () => {
     let entriesTotal = 0;
     let expensiveTotal = 0;
 
-    const transactionsFormatted: any[] = transactionsData?.map((item: any) => {
+    const transactionsFormatted = transactionsData?.map((item: any) => {
       if (item.type === "positive") {
         entriesTotal += Number(item.amount);
       } else {
@@ -80,8 +80,6 @@ const Dashboard = () => {
         category: item.category,
       };
     });
-
-    console.log(transactionsFormatted);
 
     const lastTransactionsEntries = getLastTransactionDate(
       transactionsData,
@@ -132,8 +130,6 @@ const Dashboard = () => {
   }
 
   const handleGetValue = () => {
-    setIsLoading(true);
-
     firestore()
       .collection("transaction")
       .where("idUser", "==", userFirebase?.uid || user.id)
@@ -149,18 +145,27 @@ const Dashboard = () => {
           (a: any, b: any) =>
             new Date(b.date.toDate()) - new Date(a.date.toDate())
         );
-        console.log("sortedActivities>>>>", sortedActivities);
 
         setTransactionsData(sortedActivities);
-        loadTransactions();
-        setIsLoading(false);
       });
   };
 
   useEffect(() => {
+    loadTransactions();
+  }, [transactionsData]);
+
+  useEffect(() => {
+    setIsLoading(true);
     handleGetValue();
     loadTransactions();
+    setIsLoading(false);
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadTransactions();
+    }, [])
+  );
 
   return (
     <Container>
